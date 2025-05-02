@@ -1,16 +1,19 @@
 let video;
 let pg; // p5.Graphics 物件
+let gridSpacing = 20;
+let circleDiameter = 15;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background('#ffe6a7');
 
   video = createCapture(VIDEO);
-  video.size(640, 480); // 設定視訊尺寸 (可依您的攝影機調整)
+  video.size(320, 240); // 為了效能，縮小視訊尺寸 (可依需求調整)
   video.hide(); // 隱藏攝影機的 HTML 元素
 
-  // 創建一個與視訊尺寸相同的 p5.Graphics 物件
+  // 創建一個與視訊尺寸相同的 p5.Graphics 物件，背景為黑色
   pg = createGraphics(video.width, video.height);
+  pg.background(0);
 }
 
 function draw() {
@@ -38,15 +41,21 @@ function draw() {
   image(video, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight); // 繪製翻轉後的影像
   pop(); // 恢復之前的繪圖狀態
 
-  // 在 p5.Graphics 物件上繪製一些內容 (例如：一個紅色的圓)
-  pg.background(0, 0, 0, 0); // 清空之前的繪圖 (透明背景)
-  pg.fill(255, 0, 0);
-  pg.ellipse(pg.width / 2, pg.height / 2, 50, 50);
+  // 在 p5.Graphics 物件上繪製彩色圓點
+  pg.background(0); // 每一幀都重新繪製黑色背景
+  for (let i = 0; i < videoWidth; i += gridSpacing) {
+    for (let j = 0; j < videoHeight; j += gridSpacing) {
+      let color = video.get(i, j); // 取得視訊對應位置的顏色
+      pg.fill(color);
+      pg.noStroke();
+      pg.ellipse(i + gridSpacing / 2, j + gridSpacing / 2, circleDiameter, circleDiameter);
+    }
+  }
 
-  // 將 p5.Graphics 物件繪製到畫布上，位置與視訊相同
+  // 將 p5.Graphics 物件繪製到畫布上，位置與視訊相同 (也做相同的翻轉)
   push();
   translate(x + scaledWidth / 2, y + scaledHeight / 2);
-  scale(-1, 1); // 確保 graphics 也做相同的翻轉
+  scale(-1, 1);
   image(pg, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
   pop();
 }
@@ -58,6 +67,6 @@ function windowResized() {
 function keyPressed() {
   // 當按下 's' 鍵時儲存畫布
   if (key === 's' || key === 'S') {
-    saveCanvas('flipped_camera_with_circle', 'png');
+    saveCanvas('color_grid_on_flipped_camera', 'png');
   }
 }
