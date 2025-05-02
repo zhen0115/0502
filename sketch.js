@@ -8,7 +8,7 @@ function setup() {
   background('#ffe6a7');
 
   video = createCapture(VIDEO);
-  video.size(320, 240); // 為了效能，縮小視訊尺寸 (可依需求調整)
+  video.size(320, 240); // 設定視訊尺寸 (可依您的攝影機調整，較小尺寸效能較好)
   video.hide(); // 隱藏攝影機的 HTML 元素
 
   // 創建一個與視訊尺寸相同的 p5.Graphics 物件，背景為黑色
@@ -43,11 +43,11 @@ function draw() {
 
   // 在 p5.Graphics 物件上繪製彩色圓點
   pg.background(0); // 每一幀都重新繪製黑色背景
+  pg.noStroke();
   for (let i = 0; i < videoWidth; i += gridSpacing) {
     for (let j = 0; j < videoHeight; j += gridSpacing) {
       let color = video.get(i, j); // 取得視訊對應位置的顏色
       pg.fill(color);
-      pg.noStroke();
       pg.ellipse(i + gridSpacing / 2, j + gridSpacing / 2, circleDiameter, circleDiameter);
     }
   }
